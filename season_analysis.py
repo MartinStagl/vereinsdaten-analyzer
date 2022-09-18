@@ -140,6 +140,45 @@ plt.savefig('goals_vs_conceded.png', dpi = 300)
 
 
 
+
+#############################################################################
+
+
+import pandas as pd
+import bokeh.plotting as bpl
+import bokeh.models as bmo
+from bokeh.palettes import d3
+#bpl.output_notebook()
+
+source = bpl.ColumnDataSource(df)
+
+# use whatever palette you want...
+palette = d3['Category20c'][len(df['league'].unique())]
+color_map = bmo.CategoricalColorMapper(factors=df['league'].unique(),
+                                   palette=palette)
+
+# create figure and plot
+p = bpl.figure()
+p.scatter(x='conceded', y='scored',
+          color={'field': 'league', 'transform': color_map},
+           source=source)
+labels = bmo.LabelSet(
+            x='conceded',
+            y='scored',
+            text='name',
+            level='glyph',
+            x_offset=5,
+            y_offset=5,
+            source=source,
+            render_mode='canvas')
+
+p.add_layout(labels)
+bpl.output_file("/home/mstagl/vereinsdaten-analyzer/test.html", mode='inline')
+bpl.save(p)
+bpl.show(p)
+
+#############################################################################
+
 query_goals_scored_conceded_by_type="""  """
 
 
