@@ -227,7 +227,7 @@ c.circle('conceded', 'scored', size=10, source=source_,
 c.legend.location = "top_right"
 c.legend.click_policy="hide"
 
-bpl.output_file("/home/mstagl/vereinsdaten-analyzer/test_interactive.html", mode='inline')
+bpl.output_file("/home/mstagl/vereinsdaten-analyzer/goals_scored_conced_2021-22.html", mode='inline')
 show(c)
 
 #############################################################################
