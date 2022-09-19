@@ -9,7 +9,7 @@ def query_database(query):
     :param query: Specifies in an SQL Select statement which data to load
     :return: Pandas Dataframe of resultset
     '''
-    cnx = sqlite3.connect('verbands.db')
+    cnx = sqlite3.connect('/mnt/c/Users/marst/Desktop/verbands.db')
     df = pd.read_sql_query(query, cnx)
     cnx.commit()
     cnx.close()
@@ -99,19 +99,35 @@ print_more(query_top_teams)
 # Goals Scored and Conceded Averages (Freekicks, Penalities eg.)
 # X-Axis Goals Scored; Y-Axis Goals Conceded Highlight areas, points each team
 query_goals_scored_conceded=""" 
- select league,name,
+  select league,name,
  sum(
 	CASE WHEN m.home_team_id==t.id THEN homeresult WHEN  m.away_team_id==t.id THEN awayresult ELSE 0 END
 	) as scored,
  sum(
 	CASE WHEN m.home_team_id==t.id THEN awayresult WHEN  m.away_team_id==t.id THEN homeresult  ELSE 0 END
-	) as conceded
+	) as conceded,
+season
 from teams t join 
 		(select substr(result,0,instr(result, ':')) as homeresult,
-		substr(result,instr(result, ':') + 1) as awayresult,* from matches) m 
+		substr(result,instr(result, ':') + 1) as awayresult,
+		CASE 
+		   WHEN replace(date,'-','') between '20110701' and '20120701' THEN '2011/12'
+		   WHEN replace(date,'-','') between '20120701' and '20130701' THEN '2012/13'
+		   WHEN replace(date,'-','') between '20130701' and '20140701' THEN '2013/14'
+		   WHEN replace(date,'-','') between '20140701' and '20150701' THEN '2014/15'
+		   WHEN replace(date,'-','') between '20150701' and '20160701' THEN '2015/16'
+		   WHEN replace(date,'-','') between '20160701' and '20170701' THEN '2016/17'
+		   WHEN replace(date,'-','') between '20170701' and '20180701' THEN '2017/18'
+		   WHEN replace(date,'-','') between '20180701' and '20190701' THEN '2018/19'
+		   WHEN replace(date,'-','') between '20190701' and '20200701' THEN '2019/20'
+		   WHEN replace(date,'-','') between '20200701' and '20210701' THEN '2020/21'
+		   WHEN replace(date,'-','') between '20210701' and '20220701' THEN '2021/22'
+		   WHEN replace(date,'-','') between '20220701' and '20230701' THEN '2022/23'
+		   ELSE 'undefined'
+		END as season
+		,* from matches) m 
 	on (t.id=m.away_team_id or t.id=m.home_team_id) 
-where replace(date,'-','') between '20210701' and '20220701'
-group by league,name """
+group by league,name,season """
 
 df=query_database(query_goals_scored_conceded)
 print(df.head(5))
@@ -176,6 +192,43 @@ p.add_layout(labels)
 bpl.output_file("/home/mstagl/vereinsdaten-analyzer/test.html", mode='inline')
 bpl.save(p)
 bpl.show(p)
+
+#############################################################################
+
+from bokeh.io import output_file, show
+from bokeh.models import ColumnDataSource, HoverTool, LinearColorMapper
+from bokeh.palettes import plasma
+from bokeh.plotting import figure
+from bokeh.transform import transform
+from bokeh.models import ColorBar, LogColorMapper
+
+source_ = bpl.ColumnDataSource(df)
+
+hover = HoverTool(tooltips=[
+    ("index", "$index"),
+    ("Conceded","@conceded"),
+    ("Scored", "@scored"),
+    ('Team', '@name'),
+    ('league','@league'),
+    ('Season','@season')
+])
+#mapper = LinearColorMapper(palette=plasma(256), low=df['conceded'].min(), high=df['scored'].max())
+palette = d3['Category20c'][len(df['league'].unique())]
+color_map = bmo.CategoricalColorMapper(factors=df['league'].unique(),
+                                   palette=palette)
+
+c = figure(plot_width=800, plot_height=1000, tools=[hover], title="BFV-TEAMS Season 2021/22")
+c.circle('conceded', 'scored', size=10, source=source_,
+         fill_color=transform('league', color_map), legend='league')
+
+#color_bar = ColorBar(color_mapper=color_map, label_standoff=12)
+#c.add_layout(color_bar, 'right')
+
+c.legend.location = "top_right"
+c.legend.click_policy="hide"
+
+bpl.output_file("/home/mstagl/vereinsdaten-analyzer/test_interactive.html", mode='inline')
+show(c)
 
 #############################################################################
 
