@@ -53,6 +53,6 @@ df=query_database(query_points_per_league_season_round_team)
 print(df.head())
 fig=px.scatter(df, x="difference", y="running_points", animation_frame="current_round", animation_group="name",
            color="league", hover_name="name",
-           log_x=True, size_max=55)
+           log_x=True, size_max=55, range_x=[0,200], range_y=[0,120])
 
 fig.write_html("./plots/interactive_plotly.html")
