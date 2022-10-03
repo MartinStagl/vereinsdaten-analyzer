@@ -3,13 +3,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 
-def query_database(query):
+def query_database(query,database='verbands.db'):
     '''
     Load data from database
     :param query: Specifies in an SQL Select statement which data to load
     :return: Pandas Dataframe of resultset
     '''
-    cnx = sqlite3.connect('/mnt/c/Users/marst/Desktop/verbands.db')
+    cnx = sqlite3.connect(database)
     df = pd.read_sql_query(query, cnx)
     cnx.commit()
     cnx.close()
