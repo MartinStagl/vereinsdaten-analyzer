@@ -135,7 +135,6 @@ join matches m on m.id=a.match_id
 join  teams t on (t.id=m.away_team_id or t.id=m.home_team_id)
 where type="goal" 
 		and a.team_id<>t.id 
-        type="goal"
 group by m.league,t.name, minute
 order by minute,name
 """)
@@ -223,6 +222,7 @@ if __name__ == '__main__':
         df=pd.DataFrame()
         if dataset=="query_teams_end_of_season":
             df=query_database(query_teams_end_of_season,database="verbands.db")
+            df["rank"]=df.groupby(["season","league"])["points"].rank(method="dense", ascending=False)
         elif dataset=="query_spiele_spieler":
             df=query_database(query_spiele_spieler,database="verbands.db")
         elif dataset=="query_spiele_statistics":
@@ -231,9 +231,10 @@ if __name__ == '__main__':
             df=query_database(query_goals_per_min,database="verbands.db")
         elif dataset=="query_points_per_league_season_round_team":
             df=query_database(query_points_per_league_season_round_team,database="verbands.db")
-        df["rank"]=df.groupby(["season","league"])["points"].rank(method="dense", ascending=False)
+        
         instance = startup(data=df, ignore_duplicate=True)
-        return redirect(f"/dtale/main/{instance._data_id}", code=302)
+        return render_template('data.html', iframe=f"/dtale/main/{instance._data_id}")
+
 
     @app.route("/")
     def hello_world():
