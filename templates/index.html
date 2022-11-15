@@ -1,0 +1,28 @@
+
+
+{% extends "base.html" %}
+
+{% block content %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+
+    <div class="container h-100">
+    <div class="row h-100 justify-content-center align-items-center">
+        <h2> Um zu starten müssen alle Daten aus der Datenbank geladen werden</h2> 
+        <div>Wähle deshalb die zu ladenden Daten:
+            <p>
+            <a class="btn btn-primary" role="button" href="/load-data?data=query_teams_end_of_season">Stand Ende der Saison pro Team und Liga</a>
+            <p>
+            <a class="btn btn-primary" role="button" href="/load-data?data=query_spiele_spieler">Spiele pro Spieler</a>
+            <p>
+            <a class="btn btn-primary" role="button" href="/load-data?data=query_spiele_statistics">Statistik zu Spielen</a>
+            <p>
+            <a class="btn btn-primary" role="button" href="/load-data?data=query_goals_per_min">Tore pro Minute</a>
+            <p>
+            <a class="btn btn-primary" role="button" href="/load-data?data=query_points_per_league_season_round_team">Punkte pro Liga pro Saison pro Runde pro Teams</a>
+        </div>'''
+    </div>
+    </div>
+
+
+{% endblock %}
