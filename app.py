@@ -237,6 +237,8 @@ if __name__ == '__main__':
 
 
     @app.route("/")
+    @app.route("/index.html")
+    @app.route("/index")
     def hello_world():
        return render_template('index.html', navigation=navigation)
 
