@@ -216,23 +216,23 @@ def query_database(query,database='verbands.db'):
 if __name__ == '__main__':
     app = build_app(reaper_on=False,additional_templates='templates')
     Bootstrap(app)
-
+    print("STARTING APP PLEASE WAIT FOR DATA TO LOAD")
     df=query_database(query_teams_end_of_season,database="verbands.db")
     df["rank"]=df.groupby(["season","league"])["points"].rank(method="dense", ascending=False)
     instance = startup(data_id=vereinsdata["query_teams_end_of_season"],data=df)
-    
+    print("Loaded query_teams_end_of_season")
     df=query_database(query_spiele_spieler,database="verbands.db")
     instance = startup(data_id=vereinsdata["query_spiele_spieler"],data=df)
-    
+    print("Loaded query_spiele_spieler")
     df=query_database(query_spiele_statistics,database="verbands.db")
     instance = startup(data_id=vereinsdata["query_spiele_statistics"],data=df)
-    
+    print("Loaded query_spiele_statistics")
     df=query_database(query_goals_per_min,database="verbands.db")
     instance = startup(data_id=vereinsdata["query_goals_per_min"],data=df)
-    
+    print("Loaded query_goals_per_min")
     df=query_database(query_points_per_league_season_round_team,database="verbands.db")
     instance = startup(data_id=vereinsdata["query_points_per_league_season_round_team"],data=df)
-        
+    print("Loaded query_points_per_league_season_round_team")
 
     @app.errorhandler(404)
     def not_found_error(error):
